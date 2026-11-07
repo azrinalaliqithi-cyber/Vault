@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#090e20">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Vault — Personal Finance</title>
+<style>
+:root{--bg:#080d1d;--panel:#141d38;--panel2:#1b2748;--muted:#9aa7c5;--text:#f5f7ff;--yellow:#f4f65b;--green:#55d99a;--red:#ff7188;--line:#293657}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#24335b 0,#0b1228 38%,#070b17 75%);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:0}
+.app{max-width:480px;margin:auto;min-height:100vh;padding:22px 18px 100px;position:relative}
+.top{display:flex;justify-content:space-between;align-items:center;margin:8px 2px 22px}.brand{font-weight:800;letter-spacing:.7px;font-size:20px}.brand span{color:var(--yellow)}.topright{display:flex;gap:10px;align-items:center}.iconbtn{width:42px;height:42px;border-radius:15px;background:#202b49;color:white;font-size:19px;border:1px solid #334064}.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f5f65b,#6f88c9);display:grid;place-items:center;color:#111827;font-weight:800}
+.hello{color:var(--muted);font-size:12px;margin-bottom:5px}.heading{font-size:23px;font-weight:750;margin:0 0 17px}
+.wallethead{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 12px}.section{font-weight:700;font-size:14px}.subtle{color:var(--muted);font-size:11px}
+.wallets{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 14px;scroll-snap-type:x mandatory;scrollbar-width:none}.wallets::-webkit-scrollbar{display:none}
+.wallet{flex:0 0 82%;min-height:158px;border-radius:23px;padding:18px;background:linear-gradient(135deg,#f7f86a,#d8e94c 58%,#a5c95b);color:#151a25;position:relative;overflow:hidden;scroll-snap-align:start;box-shadow:0 14px 30px #0005}.wallet:after{content:"";position:absolute;width:160px;height:160px;border:1px solid #ffffff65;border-radius:50%;right:-35px;top:-55px;box-shadow:0 0 0 18px #ffffff16,0 0 0 38px #ffffff12}.wallet.dark{background:linear-gradient(135deg,#263b70,#111a34);color:white}.wallet.purple{background:linear-gradient(135deg,#7b6ad8,#30295d);color:white}.wallet .wlabel{font-size:11px;opacity:.75}.wallet .wname{font-weight:750;font-size:15px;margin-top:3px}.wallet .amount{font-size:27px;font-weight:850;letter-spacing:-1px;margin:16px 0 5px}.wallet .wfoot{font-size:11px;opacity:.8;display:flex;justify-content:space-between;position:relative;z-index:1}.wallet .chip{position:absolute;right:17px;bottom:18px;border:1px solid #ffffff70;border-radius:8px;padding:5px 8px;font-size:10px;z-index:1}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:7px 0 21px}.stat{background:linear-gradient(145deg,#182443,#111a31);border:1px solid #263454;border-radius:18px;padding:15px}.stat .slabel{font-size:11px;color:var(--muted)}.stat .value{font-size:18px;font-weight:800;margin:9px 0 4px}.positive{color:var(--green)}.negative{color:var(--red)}
+.quick{display:flex;gap:9px;margin:14px 0 22px}.quick button{flex:1;border-radius:14px;padding:12px 6px;background:#202c4b;color:white;font-size:12px;border:1px solid #2c3a5e}.quick button.primary{background:var(--yellow);color:#171a21;font-weight:800}
+.rowbetween{display:flex;justify-content:space-between;align-items:center}.transactions{margin-top:10px}.tx{display:flex;align-items:center;gap:11px;padding:13px 3px;border-bottom:1px solid #202b46}.txicon{width:39px;height:39px;border-radius:13px;background:#243254;display:grid;place-items:center;font-size:17px}.txinfo{flex:1}.txname{font-size:13px;font-weight:700}.txmeta{font-size:10px;color:var(--muted);margin-top:4px}.txamount{font-size:13px;font-weight:750}.empty{padding:24px;text-align:center;color:var(--muted);font-size:12px;background:#121b32;border-radius:16px}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);padding:12px 22px calc(12px + env(safe-area-inset-bottom));display:flex;justify-content:space-around;background:#0d1428ed;backdrop-filter:blur(18px);border-top:1px solid #273351;z-index:5}.navbtn{width:48px;height:45px;border-radius:15px;background:transparent;color:#9eabc8;font-size:20px}.navbtn.active{background:#f4f65b;color:#101522}
+.panel{display:none}.panel.active{display:block}.gearlist{display:grid;gap:10px;margin-top:18px}.gearitem{display:flex;align-items:center;gap:12px;padding:15px;border-radius:16px;background:#17223e;border:1px solid #293858;color:white;text-align:left;width:100%}.gearitem .gicon{font-size:19px;width:30px}.gearitem strong{display:block;font-size:13px}.gearitem small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.overlay{display:none;position:fixed;inset:0;background:#0009;z-index:10;align-items:flex-end;justify-content:center}.overlay.show{display:flex}.sheet{width:min(480px,100%);max-height:88vh;overflow:auto;background:#111a31;border:1px solid #2c3b5e;border-radius:25px 25px 0 0;padding:21px 19px 28px;box-shadow:0 -15px 50px #0008}.sheethead{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.sheet h2{font-size:18px;margin:0}.close{background:#253252;color:white;border-radius:12px;width:35px;height:35px;font-size:18px}
+.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:11px;color:var(--muted)}.field input,.field select{width:100%;padding:13px;border-radius:12px;background:#202c49;border:1px solid #344365;color:white;outline:none}.action{width:100%;padding:13px;border-radius:13px;background:var(--yellow);font-weight:800;color:#141923;margin-top:10px}.secondary{background:#263453;color:white}.hint{font-size:10px;color:var(--muted);line-height:1.5;margin-top:9px}.currencyline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #293653;font-size:12px}.toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:#e9f15d;color:#151923;padding:10px 15px;border-radius:12px;font-size:12px;font-weight:700;opacity:0;pointer-events:none;transition:.2s;z-index:20}.toast.show{opacity:1}
+@media(min-width:600px){body{padding:20px 0}.app{border:1px solid #263351;border-radius:30px;min-height:850px;box-shadow:0 20px 80px #0008}.bottom{bottom:20px;border-radius:0 0 28px 28px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><div class="brand">VAULT<span>.</span></div><div class="topright"><span class="subtle" id="today"></span><div class="avatar">V</div></div></header>
+
+  <main id="homePanel" class="panel active">
+    <div class="hello">PERSONAL FINANCE OVERVIEW</div><h1 class="heading">Your money, in control.</h1>
+    <div class="wallethead"><div class="section">My wallets</div><button class="subtle" style="background:none;color:var(--yellow)" onclick="openSheet('wallet')">+ Add wallet</button></div>
+    <div class="wallets" id="walletList"></div>
+    <div class="wallethead"><div class="section">Overview</div><span class="subtle" id="baseLabel">Base: USD</span></div>
+    <div class="summary">
+      <div class="stat"><div class="slabel">Total balance</div><div class="value" id="totalBalance">$0.00</div><div class="subtle">Across all wallets</div></div>
+      <div class="stat"><div class="slabel">This month income</div><div class="value positive" id="incomeTotal">$0.00</div><div class="subtle">Money received</div></div>
+      <div class="stat"><div class="slabel">This month expense</div><div class="value negative" id="expenseTotal">$0.00</div><div class="subtle">Money spent</div></div>
+      <div class="stat"><div class="slabel">Exchange rates</div><div class="value" id="rateStatus" style="font-size:14px">Loading…</div><div class="subtle" id="rateDate">Live rate feed</div></div>
+    </div>
+    <div class="quick"><button onclick="openSheet('transaction')">＋ Add transaction</button><button onclick="openSheet('transfer')">⇄ Transfer</button><button class="primary" onclick="refreshRates()">↻ Rates</button></div>
+    <div class="rowbetween"><div class="section">Recent transactions</div><span class="subtle" id="txCount">0 records</span></div>
+    <div class="transactions" id="transactions"></div>
+  </main>
+
+  <main id="statsPanel" class="panel">
+    <div class="hello">YOUR FINANCIAL ACTIVITY</div><h1 class="heading">Statistics</h1>
+    <div class="stat" style="margin-bottom:12px"><div class="slabel">Monthly cash flow</div><div class="value" id="netFlow">$0.00</div><div class="subtle">Income minus expenses, this month</div></div>
+    <div class="section" style="margin:20px 2px 10px">Spending by category</div><div id="categoryStats" class="stat"></div>
+    <div class="section" style="margin:20px 2px 10px">Currency converter</div>
+    <div class="stat">
+      <div class="field"><label>Amount</label><input id="convertAmount" type="number" value="1" min="0" oninput="convertCurrency()"></div>
+      <div class="field"><label>From</label><select id="convertFrom" onchange="convertCurrency()"></select></div>
+      <div class="field"><label>To</label><select id="convertTo" onchange="convertCurrency()"></select></div>
+      <div class="value" id="convertResult">Loading rates…</div><div class="hint" id="convertHint">Rates are indicative and may differ from bank or exchange-office rates.</div>
+    </div>
+  </main>
+
+  <main id="settingsPanel" class="panel">
+    <div class="hello">PREFERENCES & TOOLS</div><h1 class="heading">Settings</h1>
+    <div class="stat"><div class="slabel">Base currency</div><div class="value" id="baseCurrencyView">USD</div><div class="subtle">Used for your dashboard totals</div></div>
+    <div class="gearlist">
+      <button class="gearitem" onclick="openSheet('wallet')"><span class="gicon">▣</span><span><strong>Manage wallets</strong><small>Add, rename, or remove wallets</small></span></button>
+      <button class="gearitem" onclick="openSheet('transaction')"><span class="gicon">↕</span><span><strong>Transactions</strong><small>Record income and expenses</small></span></button>
+      <button class="gearitem" onclick="openSheet('currency')"><span class="gicon">◎</span><span><strong>Currency & exchange rates</strong><small>Choose base currency and view supported currencies</small></span></button>
+      <button class="gearitem" onclick="openSheet('categories')"><span class="gicon">▤</span><span><strong>Categories</strong><small>See spending categories</small></span></button>
+      <button class="gearitem" onclick="exportData()"><span class="gicon">⇩</span><span><strong>Export data</strong><small>Download your transactions as CSV</small></span></button>
+      <button class="gearitem" onclick="resetData(this)"><span class="gicon">⟲</span><span><strong>Reset demo data</strong><small>Clear local data and start again</small></span></button>
+    </div>
+    <p class="hint">Your entries are saved in this browser on this device. This demo does not connect to a bank account.</p>
+  </main>
+</div>
+<nav class="bottom">
+  <button class="navbtn active" aria-label="Home" onclick="showPanel('home')">⌂</button>
+  <button class="navbtn" aria-label="Statistics" onclick="showPanel('stats')">▥</button>
+  <button class="navbtn" aria-label="Settings" onclick="showPanel('settings')">⚙</button>
+</nav>
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeSheet()"><div class="sheet"><div class="sheethead"><h2 id="sheetTitle">Add</h2><button class="close" onclick="closeSheet()">×</button></div><div id="sheetBody"></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const API='https://open.er-api.com/v6/latest/USD';
+const symbols={USD:'$',EUR:'€',GBP:'£',EGP:'E£',IDR:'Rp',SAR:'ر.س',AED:'د.إ',JPY:'¥',CNY:'¥',INR:'₹',TRY:'₺',CAD:'C$',AUD:'A$',CHF:'Fr',KWD:'د.ك',QAR:'ر.ق',MYR:'RM',SGD:'S$',KRW:'₩',PKR:'₨'};
+const currencyNames={USD:'US Dollar',EUR:'Euro',GBP:'British Pound',EGP:'Egyptian Pound',IDR:'Indonesian Rupiah',SAR:'Saudi Riyal',AED:'UAE Dirham',JPY:'Japanese Yen',CNY:'Chinese Yuan',INR:'Indian Rupee',TRY:'Turkish Lira',CAD:'Canadian Dollar',AUD:'Australian Dollar',CHF:'Swiss Franc',KWD:'Kuwaiti Dinar',QAR:'Qatari Riyal',MYR:'Malaysian Ringgit',SGD:'Singapore Dollar',KRW:'South Korean Won',PKR:'Pakistani Rupee'};
+const FALLBACK={USD:1,EUR:.92,GBP:.78,EGP:49,IDR:16300,SAR:3.75,AED:3.6725,JPY:150,CNY:7.2,INR:85,TRY:40,CAD:1.37,AUD:1.53,CHF:.82,KWD:.307,QAR:3.64,MYR:4.25,SGD:1.3,KRW:1400,PKR:280};
+let rates=Object.assign({},FALLBACK),rateUpdated=null,base='USD',wallets=[],transactions=[];
+const $=id=>document.getElementById(id);
+const fmt=(n,c)=>`${symbols[c]||c+' '}${Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function save(){try{localStorage.setItem('vault_data',JSON.stringify({base,wallets,transactions}))}catch(e){toast('Storage unavailable: data will not be saved')}}
+function load(){try{const d=JSON.parse(localStorage.getItem('vault_data')||'{}');base=d.base||'USD';wallets=d.wallets||[{id:1,name:'Everyday wallet',currency:'USD',balance:3540.60,style:''},{id:2,name:'Egypt wallet',currency:'EGP',balance:12500,style:'dark'},{id:3,name:'Savings',currency:'IDR',balance:2500000,style:'purple'}];transactions=d.transactions||[{id:1,name:'Groceries',category:'Food',walletId:1,type:'expense',amount:42.5,currency:'USD',date:new Date().toISOString()},{id:2,name:'Monthly allowance',category:'Income',walletId:1,type:'income',amount:420,currency:'USD',date:new Date().toISOString()}]}catch(e){wallets=[];transactions=[]}}
+try{const c=JSON.parse(localStorage.getItem('vault_rates')||'null');if(c&&c.rates){rates=Object.assign({},FALLBACK,c.rates);rateUpdated=c.t}}catch(e){}
+function toBase(amount,cur){const usd=rates[cur]?amount/rates[cur]:0;return usd*(rates[base]||1)}
+function render(){ $('baseLabel').textContent='Base: '+base;$('baseCurrencyView').textContent=base;
+$('walletList').innerHTML=wallets.map(w=>`<div class="wallet ${w.style||''}"><div class="wlabel">${esc(w.name)}</div><div class="wname">${esc(currencyNames[w.currency]||w.currency)} · ${w.currency}</div><div class="amount">${fmt(w.balance,w.currency)}</div><div class="wfoot"><span>WALLET BALANCE</span><span>${w.currency}</span></div><div class="chip">VAULT</div></div>`).join('')||'<div class="empty">No wallets yet. Add one in Settings.</div>';
+const total=wallets.reduce((s,w)=>s+toBase(w.balance,w.currency),0);$('totalBalance').textContent=fmt(total,base);
+const month=new Date().getMonth(),year=new Date().getFullYear();const recent=transactions.filter(t=>{let d=new Date(t.date);return d.getMonth()===month&&d.getFullYear()===year&&t.category!=='Transfer'});
+const inc=recent.filter(t=>t.type==='income').reduce((s,t)=>s+toBase(t.amount,t.currency),0),exp=recent.filter(t=>t.type==='expense').reduce((s,t)=>s+toBase(t.amount,t.currency),0);
+$('incomeTotal').textContent='+'+fmt(inc,base);$('expenseTotal').textContent='-'+fmt(exp,base);$('netFlow').textContent=fmt(inc-exp,base);
+$('txCount').textContent=transactions.length+' records';
+$('transactions').innerHTML=transactions.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,8).map(t=>`<div class="tx"><div class="txicon">${t.type==='income'?'↙':'↗'}</div><div class="txinfo"><div class="txname">${esc(t.name)}</div><div class="txmeta">${esc(t.category)} · ${new Date(t.date).toLocaleDateString()}</div></div><div class="txamount ${t.type==='income'?'positive':'negative'}">${t.type==='income'?'+':'−'}${fmt(t.amount,t.currency)}</div>${t.category==='Transfer'?'':`<button aria-label="Delete transaction" style="background:none;color:var(--muted);padding:6px" onclick="delTx(this,${t.id})">✕</button>`}</div>`).join('')||'<div class="empty">No transactions yet.</div>';
+const cats={};recent.filter(t=>t.type==='expense').forEach(t=>cats[t.category]=(cats[t.category]||0)+toBase(t.amount,t.currency));
+$('categoryStats').innerHTML=Object.keys(cats).length?Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="currencyline"><span>${esc(k)}</span><strong>${fmt(v,base)}</strong></div>`).join(''):'<div class="subtle">No expenses recorded this month.</div>';
+}
+function showPanel(name){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));$(name+'Panel').classList.add('active');document.querySelectorAll('.navbtn').forEach((b,i)=>b.classList.toggle('active',['home','stats','settings'][i]===name));if(name==='stats')populateCurrencies()}
+function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
+function openSheet(type){$('overlay').classList.add('show');let title='',body='';
+if(type==='wallet'){title='Manage wallets';body=`<div class="field"><label>Wallet name</label><input id="wName" placeholder="e.g. Travel savings"></div><div class="field"><label>Currency</label><select id="wCurrency">${currencyOptions()}</select></div><div class="field"><label>Opening balance</label><input id="wBalance" type="number" min="0" placeholder="0"></div><button class="action" onclick="addWallet()">Add wallet</button><div style="margin-top:18px">${wallets.map(w=>`<div class="currencyline" style="gap:8px;align-items:center"><input aria-label="Wallet name" value="${esc(w.name)}" onchange="renameWallet(${w.id},this.value)" style="flex:1;min-width:0;padding:8px 10px;border-radius:10px;background:#202c49;border:1px solid #344365;color:white"><span class="subtle">${w.currency}</span><button style="background:none;color:var(--red)" onclick="deleteWallet(${w.id})">Remove</button></div>`).join('')}</div>`}
+if(type==='transaction'){title='New transaction';body=`<div class="field"><label>Type</label><select id="tType"><option value="expense">Expense</option><option value="income">Income</option></select></div><div class="field"><label>Description</label><input id="tName" placeholder="What was it for?"></div><div class="field"><label>Category</label><select id="tCategory"><option>Food</option><option>Transport</option><option>Education</option><option>Shopping</option><option>Rent</option><option>Health</option><option>Income</option><option>Other</option></select></div><div class="field"><label>Wallet</label><select id="tWallet">${wallets.map(w=>`<option value="${w.id}">${esc(w.name)} (${w.currency})</option>`).join('')}</select></div><div class="field"><label>Amount</label><input id="tAmount" type="number" min="0" step="any" placeholder="0.00"></div><button class="action" onclick="addTransaction()">Save transaction</button>`}
+if(type==='transfer'){title='Transfer between wallets';body=`<div class="field"><label>From wallet</label><select id="fromWallet">${wallets.map(w=>`<option value="${w.id}">${esc(w.name)} (${w.currency})</option>`).join('')}</select></div><div class="field"><label>To wallet</label><select id="toWallet">${wallets.map(w=>`<option value="${w.id}">${esc(w.name)} (${w.currency})</option>`).join('')}</select></div><div class="field"><label>Amount (in source currency)</label><input id="transferAmount" type="number" min="0" step="any"></div><button class="action" onclick="transfer()">Transfer</button><p class="hint">Conversion uses the latest available reference rates. Check the received amount before confirming important transfers.</p>`}
+if(type==='currency'){title='Currency settings';body=`<div class="field"><label>Dashboard base currency</label><select id="baseSelect">${currencyOptions(base)}</select></div><button class="action" onclick="setBase()">Save base currency</button><div class="section" style="margin:22px 0 8px">Supported currencies (${Object.keys(rates).length})</div><div style="max-height:300px;overflow:auto">${Object.keys(rates).sort().map(c=>`<div class="currencyline"><span>${c} · ${esc(currencyNames[c]||c)}</span><strong>${Number(rates[c]).toFixed(4)}</strong></div>`).join('')}</div><p class="hint">Rates are quoted against USD and supplied by a public exchange-rate feed.</p>`}
+if(type==='categories'){title='Categories';body=`${['Food','Transport','Education','Shopping','Rent','Health','Income','Other'].map((c,i)=>`<div class="currencyline"><span>${['🍜','🚕','📚','🛍️','🏠','✚','↙','✦'][i]} ${c}</span><span class="subtle">Built-in category</span></div>`).join('')}`}
+if(type==='export'){title='Export transactions';body=`<textarea id="csvBox" readonly rows="8" style="width:100%;padding:12px;border-radius:12px;background:#202c49;border:1px solid #344365;color:white;font-size:11px">${esc(csvText())}</textarea><button class="action" onclick="downloadCsv()">Download CSV</button><p class="hint">If the download does not start on your device, copy the text above and paste it into a spreadsheet.</p>`}
+$('sheetTitle').textContent=title;$('sheetBody').innerHTML=body}
+function closeSheet(){$('overlay').classList.remove('show')}
+function currencyOptions(selected=''){return Object.keys(rates).sort().map(c=>`<option value="${c}" ${c===selected?'selected':''}>${c} — ${esc(currencyNames[c]||c)}</option>`).join('')}
+function addWallet(){let name=$('wName').value.trim(),currency=$('wCurrency').value,balance=Number($('wBalance').value);if(!name||!Number.isFinite(balance)||balance<0)return toast('Enter a wallet name and valid balance');wallets.push({id:Date.now(),name,currency,balance,style:['','dark','purple'][wallets.length%3]});save();render();openSheet('wallet');toast('Wallet added')}
+function deleteWallet(id){if(wallets.length<2)return toast('Keep at least one wallet');if(transactions.some(t=>t.walletId===id))return toast('This wallet has transactions. Keep it for your records.');wallets=wallets.filter(w=>w.id!==id);save();render();openSheet('wallet')}
+function addTransaction(){let wallet=wallets.find(w=>w.id===Number($('tWallet').value)),amount=Number($('tAmount').value),name=$('tName').value.trim();if(!wallet||!name||!Number.isFinite(amount)||amount<=0)return toast('Complete all fields with a valid amount');let type=$('tType').value;if(type==='expense'&&wallet.balance<amount)return toast('Not enough balance in this wallet');wallet.balance+=type==='income'?amount:-amount;transactions.push({id:Date.now(),name,category:$('tCategory').value,walletId:wallet.id,type,amount,currency:wallet.currency,date:new Date().toISOString()});save();render();closeSheet();toast('Transaction saved')}
+function transfer(){let from=wallets.find(w=>w.id===Number($('fromWallet').value)),to=wallets.find(w=>w.id===Number($('toWallet').value)),amount=Number($('transferAmount').value);if(!from||!to||from.id===to.id||!Number.isFinite(amount)||amount<=0)return toast('Choose two wallets and enter an amount');if(from.balance<amount)return toast('Insufficient source balance');let received=amount/(rates[from.currency]||1)*(rates[to.currency]||1);from.balance-=amount;to.balance+=received;transactions.push({id:Date.now(),name:`Transfer to ${to.name}`,category:'Transfer',walletId:from.id,type:'expense',amount,currency:from.currency,date:new Date().toISOString()});transactions.push({id:Date.now()+1,name:`Transfer from ${from.name}`,category:'Transfer',walletId:to.id,type:'income',amount:received,currency:to.currency,date:new Date().toISOString()});save();render();closeSheet();toast('Transfer completed')}
+function setBase(){base=$('baseSelect').value;save();render();closeSheet();toast('Base currency updated')}
+async function refreshRates(){ $('rateStatus').textContent='Updating…';try{let r=await fetch(API,{cache:'no-store'});if(!r.ok)throw Error('network');let d=await r.json();if(d.result!=='success')throw Error('rate feed');rates=Object.assign({},FALLBACK,d.rates);rates.USD=1;rateUpdated=d.time_last_update_utc||new Date().toUTCString();try{localStorage.setItem('vault_rates',JSON.stringify({rates,t:rateUpdated}))}catch(e){}$('rateStatus').textContent='Updated';$('rateDate').textContent='Updated '+new Date().toLocaleTimeString();render();populateCurrencies();}catch(e){$('rateStatus').textContent='Offline';$('rateDate').textContent='Using saved or estimated rates';toast('Could not refresh rates. Check your connection.')}} 
+function populateCurrencies(){let a=$('convertFrom'),b=$('convertTo');if(!a||!b)return;let oldA=a.value||base,oldB=b.value||'EGP';a.innerHTML=currencyOptions(oldA);b.innerHTML=currencyOptions(oldB);convertCurrency()}
+function convertCurrency(){let a=$('convertFrom'),b=$('convertTo');if(!a||!b)return;let amount=Number($('convertAmount').value||0),from=a.value,to=b.value;if(!rates[from]||!rates[to]){$('convertResult').textContent='Rate unavailable';return}let result=amount/rates[from]*rates[to];$('convertResult').textContent=`${fmt(amount,from)} = ${fmt(result,to)}`;$('convertHint').textContent='Indicative rate · '+(rateUpdated||'Rate feed not refreshed')}
+function csvText(){const rows=[['Date','Name','Type','Category','Amount','Currency'],...transactions.map(t=>[t.date,t.name,t.type,t.category,t.amount,t.currency])];return rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n')}
+function exportData(){openSheet('export')}
+function downloadCsv(){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csvText()],{type:'text/csv'}));a.download='vault-transactions.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}catch(e){toast('Copy the text instead')}}
+function renameWallet(id,v){v=v.trim();const w=wallets.find(x=>x.id===id);if(!w)return;if(!v)return toast('Name cannot be empty'),openSheet('wallet');w.name=v;save();render();toast('Wallet renamed')}
+function delTx(e,id){if(!e.dataset.c){e.dataset.c=1;e.textContent='Sure?';setTimeout(()=>{if(e.isConnected){delete e.dataset.c;e.textContent='✕'}},3000);return}const t=transactions.find(x=>x.id===id);if(!t)return;const w=wallets.find(x=>x.id===t.walletId);if(w)w.balance+=t.type==='income'?-t.amount:t.amount;transactions=transactions.filter(x=>x.id!==id);save();render();toast('Transaction deleted, balance restored')}
+function resetData(e){if(!e.dataset.c){e.dataset.c=1;toast('Tap again to reset all data');setTimeout(()=>delete e.dataset.c,3500);return}delete e.dataset.c;localStorage.removeItem('vault_data');load();save();render();closeSheet();toast('Demo data restored')}
+$('today').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});load();render();refreshRates();populateCurrencies();
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body></html>
